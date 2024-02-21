@@ -33,8 +33,8 @@ export const BunCard: FC<BunCardProps> = ({
   }
   return (
     <CCard
-      className={`mb-3 border-top-dark border-top-3`}
-      style={{ maxWidth: "18rem" }}
+      className={`mb-3 border-top-danger border-top-3`}
+      style={{ maxWidth: "18rem"}}
     >
       <CCardHeader className={`h5`}> {bun} x ? </CCardHeader>
       <CCardBody>

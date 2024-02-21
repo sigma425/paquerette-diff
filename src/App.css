@@ -7,7 +7,7 @@ h2 {
   font-size: 30px;
 }
 
-label {
+.labelOfBox {
   border-bottom: 2px solid #cccccc;
   margin-bottom: 10px;
 }
@@ -20,4 +20,10 @@ label {
 .boxes {
   display: flex;
   justify-content: space-around;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }

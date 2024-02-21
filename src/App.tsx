@@ -1,7 +1,7 @@
 import { listBuns, getBabiesMap } from "./util.tsx";
 import { BunCard } from "./bunCard.tsx";
 import React, { FC, useState, ChangeEvent } from "react";
-import { CButton, CRow, CCol } from "@coreui/react";
+import { CButton, CRow, CCol, CFormCheck } from "@coreui/react";
 import "./App.css";
 
 interface TextBoxProps {
@@ -14,7 +14,7 @@ interface TextBoxProps {
 const TextBox: FC<TextBoxProps> = ({ label, val, placeholder, onChange }) => {
   return (
     <span className="textBox">
-      <label htmlFor={label}> {label} </label>
+      <label htmlFor={label} className="labelOfBox"> {label} </label>
       <textarea
         id={label}
         cols={30}
@@ -33,6 +33,8 @@ interface InputSectionProps {
   rival: string;
   onChangeRival: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   onClickDiff: () => void;
+  floorFirst: boolean,
+  onChangeSort: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 const InputSection: FC<InputSectionProps> = ({
@@ -41,6 +43,8 @@ const InputSection: FC<InputSectionProps> = ({
   rival,
   onChangeRival,
   onClickDiff,
+  floorFirst,
+  onChangeSort,
 }) => {
   return (
     <>
@@ -58,9 +62,12 @@ const InputSection: FC<InputSectionProps> = ({
           onChange={onChangeRival}
         />
       </div>
-      <CButton color="primary" size="lg" onClick={onClickDiff}>
-        Diff!
-      </CButton>
+      <div className="buttons">
+        <CButton color="primary" size="lg" onClick={onClickDiff}>
+          Diff!
+        </CButton>
+        <CFormCheck id="flexCheckChecked" label="sort by floor first" checked={floorFirst} onChange={onChangeSort} />
+      </div>
     </>
   );
 };
@@ -68,12 +75,20 @@ const InputSection: FC<InputSectionProps> = ({
 interface ResultSectionProps {
   you: string;
   rival: string;
+  floorFirst: boolean;
 }
 
-const ResultSection: FC<ResultSectionProps> = ({ you, rival }) => {
-  if (!you && !rival) {
+const ResultSection: FC<ResultSectionProps> = ({ you, rival, floorFirst }) => {
+  let bunList = listBuns(you, rival, floorFirst);
+  if(bunList.length === 0){
     return <></>;
   }
+  if(bunList[0] === "err"){
+    return <h5> invalid bun: {bunList[1]} </h5>
+  }
+  let yourBabies = getBabiesMap(you, bunList);
+  let rivalBabies = getBabiesMap(rival, bunList);
+
   function getBunCard(bun: string) {
     const yourMates: string[] = yourBabies.get(bun) ?? [];
     const rivalMates: string[] = rivalBabies.get(bun) ?? [];
@@ -92,9 +107,7 @@ const ResultSection: FC<ResultSectionProps> = ({ you, rival }) => {
       ></BunCard>
     );
   }
-  let bunList = listBuns(you, rival);
-  let yourBabies = getBabiesMap(you, bunList);
-  let rivalBabies = getBabiesMap(rival, bunList);
+
   return (
     <CRow xs={{ cols: "auto"}}>
       {bunList.map((bun) => <CCol key={bun}> {getBunCard(bun)} </CCol>)}
@@ -107,6 +120,7 @@ const App: FC = () => {
   const [rival, setRival] = useState<string>("");
   const [youSnap, setYouSnap] = useState<string>("");
   const [rivalSnap, setRivalSnap] = useState<string>("");
+  const [floorFirst, setFloorFirst] = useState<boolean>(false);
 
   return (
     <>
@@ -122,9 +136,11 @@ const App: FC = () => {
           setYouSnap(you);
           setRivalSnap(rival);
         }}
+        floorFirst={floorFirst}
+        onChangeSort={(e) => setFloorFirst(e.target.checked)}
       />
       <p></p>
-      <ResultSection you={youSnap} rival={rivalSnap} />
+      <ResultSection you={youSnap} rival={rivalSnap} floorFirst={floorFirst} />
     </>
   );
 };
