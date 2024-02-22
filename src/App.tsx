@@ -35,6 +35,8 @@ interface InputSectionProps {
   onClickDiff: () => void;
   floorFirst: boolean,
   onChangeSort: (e: ChangeEvent<HTMLInputElement>) => void;
+  hideNoDiff: boolean,
+  onChangeHide: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 const InputSection: FC<InputSectionProps> = ({
@@ -45,6 +47,8 @@ const InputSection: FC<InputSectionProps> = ({
   onClickDiff,
   floorFirst,
   onChangeSort,
+  hideNoDiff,
+  onChangeHide,
 }) => {
   return (
     <>
@@ -66,7 +70,8 @@ const InputSection: FC<InputSectionProps> = ({
         <CButton color="primary" size="lg" onClick={onClickDiff}>
           Diff!
         </CButton>
-        <CFormCheck id="flexCheckChecked" label="sort by floor first" checked={floorFirst} onChange={onChangeSort} />
+        <CFormCheck id="floorFirst" label="sort by floor first" checked={floorFirst} onChange={onChangeSort} />
+        <CFormCheck id="hideNoDiff" label="hide no diff cards" checked={hideNoDiff} onChange={onChangeHide} />
       </div>
     </>
   );
@@ -76,9 +81,10 @@ interface ResultSectionProps {
   you: string;
   rival: string;
   floorFirst: boolean;
+  hideNoDiff: boolean;
 }
 
-const ResultSection: FC<ResultSectionProps> = ({ you, rival, floorFirst }) => {
+const ResultSection: FC<ResultSectionProps> = ({ you, rival, floorFirst, hideNoDiff }) => {
   let bunList = listBuns(you, rival, floorFirst);
   if(bunList.length === 0){
     return <></>;
@@ -107,10 +113,21 @@ const ResultSection: FC<ResultSectionProps> = ({ you, rival, floorFirst }) => {
       ></BunCard>
     );
   }
+  function hasDifferentBunList(bun: string) {
+    const yourMates: string[] = yourBabies.get(bun) ?? [];
+    const rivalMates: string[] = rivalBabies.get(bun) ?? [];
+    const mates = bunList.filter(
+      (bun) => yourMates?.includes(bun) || rivalMates?.includes(bun)
+    );
+    return !(yourMates.length === mates.length && rivalMates.length === mates.length);
+  }
+
+  let filteredBunList = bunList.slice();
+  if(hideNoDiff) filteredBunList = filteredBunList.filter(hasDifferentBunList);
 
   return (
     <CRow xs={{ cols: "auto"}}>
-      {bunList.map((bun) => <CCol key={bun}> {getBunCard(bun)} </CCol>)}
+      {filteredBunList.map((bun) => <CCol key={bun}> {getBunCard(bun)} </CCol>)}
     </CRow>
   );
 };
@@ -121,6 +138,7 @@ const App: FC = () => {
   const [youSnap, setYouSnap] = useState<string>("");
   const [rivalSnap, setRivalSnap] = useState<string>("");
   const [floorFirst, setFloorFirst] = useState<boolean>(false);
+  const [hideNoDiff, setHideNoDiff] = useState<boolean>(false);
 
   return (
     <>
@@ -138,9 +156,11 @@ const App: FC = () => {
         }}
         floorFirst={floorFirst}
         onChangeSort={(e) => setFloorFirst(e.target.checked)}
+        hideNoDiff={hideNoDiff}
+        onChangeHide={(e) => setHideNoDiff(e.target.checked)}
       />
       <p></p>
-      <ResultSection you={youSnap} rival={rivalSnap} floorFirst={floorFirst} />
+      <ResultSection you={youSnap} rival={rivalSnap} floorFirst={floorFirst} hideNoDiff={hideNoDiff}/>
     </>
   );
 };
