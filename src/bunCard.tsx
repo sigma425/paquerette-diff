@@ -7,6 +7,8 @@ import {
   CContainer,
   CRow,
   CCol,
+  CListGroup,
+  CListGroupItem,
 } from "@coreui/react";
 import "@coreui/coreui/dist/css/coreui.min.css";
 
@@ -33,7 +35,7 @@ export const BunCard: FC<BunCardProps> = ({
   }
   return (
     <CCard
-      className={`mb-3 border-top-danger border-top-3`}
+      className={`mb-3 border-top-dark border-top-3`}
       style={{ maxWidth: "18rem"}}
     >
       <CCardHeader className={`h5`}> {bun} x ? </CCardHeader>
@@ -55,3 +57,34 @@ export const BunCard: FC<BunCardProps> = ({
     </CCard>
   );
 };
+
+
+interface StatsCardProps {
+  you: number;
+  rival: number;
+  total: number;
+}
+
+export const StatsCard: FC<StatsCardProps> = ({
+  you,
+  rival,
+  total,
+}) => {
+  return (
+    <CCard
+      className={`mb-3 border-top-info border-top-3`}
+      style={{ maxWidth: "18rem"}}
+    >
+      <CCardHeader className={`h5`}> All Stats </CCardHeader>
+      <CListGroup flush>
+        <CListGroupItem>you: {you}</CListGroupItem>
+        <CListGroupItem>rival: {rival}</CListGroupItem>
+        <CListGroupItem>total: {total}</CListGroupItem>
+        <CListGroupItem>only you: {total-rival}</CListGroupItem>
+        <CListGroupItem>only rival: {total-you}</CListGroupItem>
+        <CListGroupItem>both: {you+rival-total}</CListGroupItem>
+      </CListGroup>
+    </CCard>
+  );
+};
+

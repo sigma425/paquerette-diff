@@ -1,5 +1,5 @@
 import { listBuns, getBabiesMap } from "./util.tsx";
-import { BunCard } from "./bunCard.tsx";
+import { BunCard, StatsCard } from "./bunCard.tsx";
 import React, { FC, useState, ChangeEvent } from "react";
 import { CButton, CRow, CCol, CFormCheck } from "@coreui/react";
 import "./App.css";
@@ -113,6 +113,26 @@ const ResultSection: FC<ResultSectionProps> = ({ you, rival, floorFirst, hideNoD
       ></BunCard>
     );
   }
+  function getStatsCard() {
+    let you = 0, rival = 0, total = 0;
+    bunList.forEach((bun) => {
+      const yourMates: string[] = yourBabies.get(bun) ?? [];
+      const rivalMates: string[] = rivalBabies.get(bun) ?? [];
+      const mates = bunList.filter(
+        (bun) => yourMates?.includes(bun) || rivalMates?.includes(bun)
+      );
+      you += yourMates.length;
+      rival += rivalMates.length;
+      total += mates.length;
+    });
+    return (
+      <StatsCard
+        you = {you/2}
+        rival = {rival/2}
+        total = {total/2}
+      ></StatsCard>
+    );
+  }
   function hasDifferentBunList(bun: string) {
     const yourMates: string[] = yourBabies.get(bun) ?? [];
     const rivalMates: string[] = rivalBabies.get(bun) ?? [];
@@ -126,9 +146,12 @@ const ResultSection: FC<ResultSectionProps> = ({ you, rival, floorFirst, hideNoD
   if(hideNoDiff) filteredBunList = filteredBunList.filter(hasDifferentBunList);
 
   return (
-    <CRow xs={{ cols: "auto"}}>
-      {filteredBunList.map((bun) => <CCol key={bun}> {getBunCard(bun)} </CCol>)}
-    </CRow>
+    <>
+      {getStatsCard()}
+      <CRow xs={{ cols: "auto"}}>
+        {filteredBunList.map((bun) => <CCol key={bun}> {getBunCard(bun)} </CCol>)}
+      </CRow>
+    </>
   );
 };
 
