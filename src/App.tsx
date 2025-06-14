@@ -1,5 +1,6 @@
 import { listBuns, getBabiesMap } from "./util.tsx";
 import { BunCard, StatsCard } from "./bunCard.tsx";
+import { SAMPLE_YOU, SAMPLE_RIVAL } from "./sample.ts";
 import React, { FC, useState, ChangeEvent } from "react";
 import { CButton, CRow, CCol, CFormCheck } from "@coreui/react";
 import "./App.css";
@@ -167,7 +168,10 @@ const App: FC = () => {
     <>
       <h1>Paquerette Diff Tool</h1>
       <h2>How to use</h2>
-      わふだよ
+      <p>As the game progresses, you'll be able to copy the "babies list" to the clipboard.</p>
+      <p>Paste your babies list in the left box, and your rival's babies list in the right box. Then click "Diff!" to see the differences.</p>
+      <p>To see samples, click this: <CButton color="secondary" onClick={() => {setYou(SAMPLE_YOU); setRival(SAMPLE_RIVAL)}}> Set sample </CButton> and then click "Diff!"</p>
+
       <InputSection
         you={you}
         onChangeYou={(e) => setYou(e.target.value)}
